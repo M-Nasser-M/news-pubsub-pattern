@@ -7,14 +7,20 @@ var countries = (function() {
     var temp2 = $("#template2").html();
     var $news = $("#news");
     var $flags = $("#flags");
+    var $clicks;
 
     var init = function() {
 
-        events.on("getcountries", render);
+        events.on("renderTemplate", render);
 
         callCountries();
 
-        events.on("getNews", callNews);
+        events.on("newsListener", newsListener);
+
+        events.emit("newsListener");
+
+
+
 
 
 
@@ -32,12 +38,13 @@ var countries = (function() {
                         if (result[i].alpha2Code.toLowerCase() == codes[j]) {
 
 
-                            events.emit3("getcountries", result[i], temp, $flags);
+                            events.emit3("renderTemplate", result[i], temp, $flags);
 
                         }
 
                     }
                 }
+
 
 
             }
@@ -48,7 +55,7 @@ var countries = (function() {
     }
 
     var callNews = function(alpha2Code) {
-        var newsUrl = `https://newsapi.org/v2/top-headlines?country=${alpha2Code}&apiKey=33cf42b6565f4cba947b345e703ab34d`;
+        var newsUrl = `https://newsapi.org/v2/top-headlines?country=${alpha2Code}&apiKey=01c2282de32241f69eab0e4ae1e5f340`;
         $.ajax({
 
             url: newsUrl,
@@ -56,7 +63,7 @@ var countries = (function() {
             success: function(result) {
                 for (var i = 0; i < result.articles.length; i++) {
 
-                    events.emit3(result.articles[i], temp2, $news);
+                    events.emit3("renderTemplate", result.articles[i], temp2, $news);
                 }
 
 
@@ -77,8 +84,26 @@ var countries = (function() {
 
     }
 
+    var newsListener = function() {
+        $("#flags").on("click", ".click", getIdRender);
+
+
+
+
+
+    }
+
+    var getIdRender = function() {
+        $news.html("");
+
+        callNews($(this).attr("id"));
+    }
+
 
     return ({
-        init: init
+        init: init,
+
+
+
     });
 })();
